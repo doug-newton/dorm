@@ -28,10 +28,10 @@ create table users (
 	email varchar(255) not null
 );
 ```
-Extend the Model class and set `$table`, `$fillable`, and `$defaults` as required. Additionally, implement `input($data)` and `output()` - which process and create arrays of object data respectively. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
+
+Extend the Model class and set $table, $fillable, and $defaults as required. Additionally, implement input($data) and output() - which process and create arrays of object data respectively. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
 
 ```php
-
 use Dorm\Model;
 
 class User extends Model {
@@ -83,6 +83,7 @@ class User extends Model {
 ```
 
 Now you can use the User class like this:
+
 ```php
 $user = User::find(1);	#	retrieve the user with id 1
 $user->setName("Doug");
