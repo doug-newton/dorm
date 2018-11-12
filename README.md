@@ -19,7 +19,7 @@ Now you are ready to use DORM's functionality.
 
 ### Using the Model class
 
-If you have a table created like this:
+Assume you have a table called users with an id, a name and an email field.
 
 Extend the Model class and set $table, $fillable, and $defaults as required. Additionally, implement input($data) and output() - which process and create arrays of object data respectively. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
 
