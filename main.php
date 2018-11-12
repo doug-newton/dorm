@@ -1,34 +1,9 @@
 <?php
 
-namespace Dorm;
+require_once 'vendor/autoload.php';
 
-use \PDO;
-
-class Database {
-	protected static $pdo;
-	protected static $connected = false;
-
-	public static function connect($args) {
-		if (self::$connected) return;
-
-		try {
-			$host = $args['host'];
-			$user = $args['user'];
-			$password = $args['password'];
-			$dbname = $args['dbname'];
-			$dsn = 'mysql:host='.$host.';dbname='.$dbname;
-
-			self::$pdo = new PDO($dsn, $user, $password);
-			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, 
-				PDO::FETCH_OBJ);
-			self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-			self::$connected = true;
-		} catch (PDOException $e) {
-			echo "Dorm\Database::connect failed: ".
-				$e->getMessage().PHP_EOL;
-		}
-	}
-}
+use Dorm\Database;
+use Dorm\Model;
 
 Database::connect([
 	'host' => 'localhost',
@@ -36,5 +11,93 @@ Database::connect([
 	'password' => 'root',
 	'dbname' => 'dorm'
 ]);
+
+
+# insert into table
+# (one, two, three, four)
+# values
+# ('qwerty', 'uiop', 'asdfg', 'ghoti');
+
+
+use Dorm\QueryBuilder;
+
+$builder = new QueryBuilder();
+
+$fillable = ['one', 'two', 'three', 'four'];
+
+class User extends Model {
+	protected $table = 'users';
+	protected $fillable = ['name', 'email'];
+	protected $defaults = [
+		'name' => "No Name",
+		'email' => "nomail@example.com"
+	];
+
+	private $name;
+	private $email;
+
+	public function __construct() {
+	}
+
+	protected function input($data) {
+		$this->name = $data['name'];
+		$this->email = $data['email'];
+	}
+
+	protected function output() {
+		return [
+			'name' => $this->name,
+			'email' => $this->email
+		];
+	}
+
+	#	accessors
+
+	public function getName() {
+		return $this->name;
+	}
+
+	public function getEmail() {
+		return $this->email;
+	}
+
+	#	mutators
+
+	public function setName($name) {
+		$this->name = $name;
+	}
+
+	public function setEmail($email) {
+		$this->email = $email;
+	}
+}
+
+class Foo extends Model {
+	protected $table = 'foos';
+	protected $fillable = ['bar', 'baz'];
+	protected $defaults = [
+		'bar' => "default_bar",
+		'baz' => "default_baz"
+	];
+
+	private $bar;
+	private $baz;
+
+	public function __construct() {
+	}
+
+	protected function input($data) {
+		$this->bar = $data['bar'];
+		$this->baz = $data['baz'];
+	}
+
+	protected function output() {
+		return [];
+	}
+}
+
+$user = new User();
+$user->setEmail("billy@bob.com");
+$user->save();
 
 ?>
