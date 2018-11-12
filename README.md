@@ -21,14 +21,6 @@ Now you are ready to use DORM's functionality.
 
 If you have a table created like this:
 
-``sql
-create table users (
-	id int not null auto_increment primary key,
-	name varchar(255) not null,
-	email varchar(255) not null
-);
-```
-
 Extend the Model class and set $table, $fillable, and $defaults as required. Additionally, implement input($data) and output() - which process and create arrays of object data respectively. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
 
 ```php
