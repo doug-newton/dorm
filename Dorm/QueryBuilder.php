@@ -2,6 +2,8 @@
 
 namespace Dorm;
 
+use \Exception;
+
 class QueryBuilder {
 	function build_insert($table, $fillable, $defaults, &$array) {
 		foreach ($defaults as $key => $value) {
@@ -52,8 +54,12 @@ class QueryBuilder {
 			if ($i != $size) $sql .= ", ";
 			$i ++;
 		}
-		$sql .= " where id = $id";
+		$sql .= " where id = $id;";
 		return $sql;
+	}
+
+	function build_select($table, $id) {
+		return "select * from $table where id = $id;";
 	}
 }
 

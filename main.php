@@ -26,9 +26,9 @@ $builder = new QueryBuilder();
 $fillable = ['one', 'two', 'three', 'four'];
 
 class User extends Model {
-	protected $table = 'users';
-	protected $fillable = ['name', 'email'];
-	protected $defaults = [
+	protected static $table = 'users';
+	protected static $fillable = ['name', 'email'];
+	protected static $defaults = [
 		'name' => "No Name",
 		'email' => "nomail@example.com"
 	];
@@ -73,9 +73,9 @@ class User extends Model {
 }
 
 class Foo extends Model {
-	protected $table = 'foos';
-	protected $fillable = ['bar', 'baz'];
-	protected $defaults = [
+	protected static $table = 'foos';
+	protected static $fillable = ['bar', 'baz'];
+	protected static $defaults = [
 		'bar' => "default_bar",
 		'baz' => "default_baz"
 	];
@@ -95,9 +95,5 @@ class Foo extends Model {
 		return [];
 	}
 }
-
-$user = new User();
-$user->setEmail("billy@bob.com");
-$user->save();
 
 ?>

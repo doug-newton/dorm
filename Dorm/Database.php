@@ -3,6 +3,7 @@
 namespace Dorm;
 
 use \PDO;
+use \Exception;
 
 class Database {
 	protected static $pdo;
@@ -34,7 +35,7 @@ class Database {
 		if ($result) {
 			return $result;
 		} else {
-			throw Exception("Dorm\Database failed to execute query");
+			throw new Exception("Dorm\Database failed to execute query");
 		}
 	}
 
@@ -43,14 +44,14 @@ class Database {
 		if ($stmt->execute($args)) {
 			return $stmt;
 		} else {
-			throw Exception("Dorm\Database failed to execute query");
+			throw new Exception("Dorm\Database failed to execute query");
 		}
 	}
 
 	public static function execute($sql, $args) {
 		$stmt = self::$pdo->prepare($sql);
 		if (!$stmt->execute($args)) {
-			throw Exception("Dorm\Database failed to execute query");
+			throw new Exception("Dorm\Database failed to execute query");
 		}
 	}
 

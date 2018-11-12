@@ -4,19 +4,39 @@ namespace Dorm;
 
 use Dorm\Database;
 use Dorm\QueryBuilder;
+use \PDO;
 
 abstract class Model {
+	#	auto-generated id of the model (once 'created' or 'saved')
 	protected $id = 0;
-	protected $table = '';
-	protected $fillable = [];
-	protected $defaults = [];
 
+	#	name of the model's table
+	protected static $table = '';
+
+	#	fields allowed to be used in update and insert queries
+	protected static $fillable = [];
+
+	#	default values used in both create and save
+	protected static $defaults = [];
+
+	#	finds record and returns new instantiated object
+	public static function find($id) {
+		$class = get_called_class();
+		$object = new $class;
+		$builder = new QueryBuilder();
+		$sql = $builder->build_select($object::$table, $id);
+		$object->input(Database::query($sql)->fetch(PDO::FETCH_ASSOC));
+		$object->setId($id);
+		return $object;
+	}
+
+	#	instantiates new object and saves it to database
 	public static function create($array) {
 		$class = get_called_class();
 		$object = new $class;
 		$builder = new QueryBuilder();
 		$sql = $builder->build_insert(
-			$object->table,
+			self::$table,
 			$object->fillable,
 			$object->defaults,
 			$array
@@ -27,15 +47,16 @@ abstract class Model {
 		return $object;
 	}
 
+	#	either inserts the object or brute-updates its record values
 	public function save() {
 		#	insert query if this has no id
 		if ($this->id == 0) {
 			$builder = new QueryBuilder();
 			$array = $this->output();
 			$sql = $builder->build_insert(
-				$this->table,
-				$this->fillable,
-				$this->defaults,
+				$this::$table,
+				$this::$fillable,
+				$this::$defaults,
 				$array
 			);
 			Database::preparedQuery($sql, $array);
@@ -48,10 +69,10 @@ abstract class Model {
 			$builder = new QueryBuilder();
 			$array = $this->output();
 			$sql = $builder->build_update(
-				$this->table,
+				$this::$table,
 				$this->id,
-				$this->fillable,
-				$this->defaults,
+				$this::$fillable,
+				$this::$defaults,
 				$array
 			);
 			Database::preparedQuery($sql, $array);
