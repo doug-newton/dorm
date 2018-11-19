@@ -81,8 +81,19 @@ $user = User::find(1);	#	retrieve the user with id 1
 $user->setName("Doug");
 $user->save();
 
+# create automatically saves the new model and assigns it an id
 $user2 = User::create([
 	'name' => "Bob",
 	'email' => "bob@example.com"
 )];
+
+# new makes a new instance without saving (id is 0)
+$user3 = User::new([
+	'name' => "Billy",
+	'email' => "billy@example.com"
+)];
+
+# user3 record is saved and its id is updated
+user3->save();
+
 ```

@@ -77,6 +77,14 @@ abstract class Model {
 		return $object;
 	}
 
+	#	instantiates new object without saving it to database
+	public static function new($array) {
+		$class = get_called_class();
+		$object = new $class;
+		$object->input($array);
+		return $object;
+	}
+
 	#	either inserts the object or brute-updates its record values
 	public function save() {
 		#	insert query if this has no id
