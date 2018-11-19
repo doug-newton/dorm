@@ -21,7 +21,7 @@ Now you are ready to use DORM's functionality.
 
 Assume you have a table called users with an id, a name and an email field.
 
-Extend the Model class and set $table, $fillable, and $defaults as required. Additionally, implement input($data) and output() - which process and create arrays of object data respectively. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
+Extend the Model class and set $table, $fillable, and $defaults as required. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
 
 ```php
 use Dorm\Model;
@@ -33,44 +33,6 @@ class User extends Model {
 		'name' => "No Name",
 		'email' => "nomail@example.com"
 	];
-
-	private $name;
-	private $email;
-
-	public function __construct() {
-	}
-
-	protected function input($data) {
-		$this->name = $data['name'];
-		$this->email = $data['email'];
-	}
-
-	protected function output() {
-		return [
-			'name' => $this->name,
-			'email' => $this->email
-		];
-	}
-
-	#	accessors 
-
-	public function getName() {
-		return $this->name;
-	}
-
-	public function getEmail() {
-		return $this->email;
-	}
-
-	#	mutators
-
-	public function setName($name) {
-		$this->name = $name;
-	}
-
-	public function setEmail($email) {
-		$this->email = $email;
-	}
 }
 ```
 
