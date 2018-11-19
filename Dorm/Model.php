@@ -19,6 +19,36 @@ abstract class Model {
 	#	default values used in both create and save
 	protected static $defaults = [];
 
+	#	all records
+	public static function all() {
+		$objects = [];
+		$class = get_called_class();
+		$table = $class::$table;
+
+		$sql = "select * from $table;";
+
+		foreach (Database::query($sql)->fetchAll(PDO::FETCH_ASSOC) as $data) {
+			$object = new $class;
+			$object->input($data);
+			$object->setId($data['id']);
+			$objects[] = $object;
+		}
+
+		return $objects;
+	}
+
+	#	finds record with given parameters
+	public static function where($args) {
+		$class = get_called_class();
+		$object = new $class;
+		$builder = new QueryBuilder();
+		$sql = $builder->build_where($object::$table, $args);
+		$data = Database::preparedQuery($sql, $args)->fetch(PDO::FETCH_ASSOC);
+		$object->input($data);
+		$object->setId($data['id']);
+		return $object;
+	}
+
 	#	finds record and returns new instantiated object
 	public static function find($id) {
 		$class = get_called_class();
@@ -36,9 +66,9 @@ abstract class Model {
 		$object = new $class;
 		$builder = new QueryBuilder();
 		$sql = $builder->build_insert(
-			self::$table,
-			$object->fillable,
-			$object->defaults,
+			$object::$table,
+			$object::$fillable,
+			$object::$defaults,
 			$array
 		);
 		$object->input($array);
@@ -94,6 +124,11 @@ abstract class Model {
 
 	#	create associative array from object attributes
 	abstract protected function output();
+
+	public function load($data) {
+		$this->input($data);
+		$this->setId($data['id']);
+	}
 }
 
 ?>

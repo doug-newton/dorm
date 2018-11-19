@@ -61,6 +61,19 @@ class QueryBuilder {
 	function build_select($table, $id) {
 		return "select * from $table where id = $id;";
 	}
+
+	function build_where($table, $args) {
+		$sql = "select * from $table where ";
+		$size = sizeof($args);
+		$i = 1;
+		foreach ($args as $field => $value) {
+			$sql .= "$field = :$field";
+			if ($i != $size) $sql .= " and ";
+			$i ++;
+		}
+		$sql .= ";";
+		return $sql;
+	}
 }
 
 ?>

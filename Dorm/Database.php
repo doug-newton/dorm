@@ -22,6 +22,7 @@ class Database {
 			self::$pdo = new PDO($dsn, $user, $password);
 			self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, 
 				PDO::FETCH_OBJ);
+			self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
 			self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 			self::$connected = true;
 		} catch (PDOException $e) {
@@ -41,6 +42,10 @@ class Database {
 
 	public static function preparedQuery($sql, $args) {
 		$stmt = self::$pdo->prepare($sql);
+		if ($stmt == false )
+		{
+			throw new Exception("Dorm\Database failed to execute query");
+		}
 		if ($stmt->execute($args)) {
 			return $stmt;
 		} else {
