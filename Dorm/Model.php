@@ -128,10 +128,24 @@ abstract class Model {
 	}
 
 	#	assign values to object from array
-	abstract protected function input($data);
+	protected function input($data) {
+		foreach($data as $key => $value) {
+			if (in_array($key, $this::$fillable)) {
+				$this->$key = $value;
+			}
+		}
+	}
 
 	#	create associative array from object attributes
-	abstract protected function output();
+	protected function output() {
+		$output = get_object_vars($this);
+		foreach ($output as $key => $value) {
+			if (!in_array($key, $this::$fillable)) {
+				unset($output[$key]);
+			}
+		}
+		return $output;
+	}
 
 	public function load($data) {
 		$this->input($data);
