@@ -7,6 +7,47 @@ use Dorm\QueryBuilder;
 use \PDO;
 use \Exception;
 
+abstract class Relationship {
+	public abstract function get();
+
+	protected $child_class;
+	protected $foreign_key;
+
+	# the object that is using this relationship
+	protected $owner;
+
+	public function __construct($owner, $child_class, $foreign_key) {
+		$this->owner = $owner;
+		$this->child_class = $child_class;
+		$this->foreign_key = $foreign_key;
+	}
+}
+
+class HasOne extends Relationship {
+	public function get() {
+		# same as hasMany, but returns first result and there must only be one
+		$data = $child_class::where([
+			$this->foreign_key => $this->owner->getId()
+		]);
+
+		if (sizeof($data) != 1) {
+			throw new Exception("Dorm\Model \"".get_class($this->owner).
+				"\" hasOne ".
+				"failed: parent must have one child");
+		}
+
+		return $data[0];
+	}
+}
+
+class HasMany extends Relationship {
+	public function get() {
+		return $this->child_class::where([
+			$this->foreign_key => $this->owner->getId()
+		]);
+	}
+}
+
 abstract class Model {
 	#	auto-generated id of the model (once 'created' or 'saved')
 	protected $id = 0;
@@ -28,7 +69,7 @@ abstract class Model {
 
 		$sql = "select * from $table;";
 
-		foreach (Database::query($sql)->fetchAll(PDO::FETCH_ASSOC) as $data) {
+		foreach (Database::query($sql)->fetchAll(PDO::FETCH_ASSOC) as $data) { 
 			$object = new $class;
 			$object->input($data);
 			$object->setId($data['id']);
@@ -176,30 +217,29 @@ abstract class Model {
 	# for lazy relational loading
 	public function __get($name) {
 		if (method_exists($this, $name)) {
-			return $this->$name = $this->{$name}();
+			$result = $this->{$name}();
+
+			# if the returned structure has a get method (is relation)
+			# then use the result of the get method
+
+			if (is_object($result)) {
+				if (method_exists($result, 'get')) {
+					return $this->$name = $result->get();
+				}
+			}
+
+			return $this->$name = $result;
 		}
 	}
 
 	# relationships
 
 	public function hasOne($child_class, $foreign_key) {
-		# same as hasMany, but returns first result and there must only be one
-		$data = $child_class::where([
-			$foreign_key => $this->id
-		]);
-
-		if (sizeof($data) != 1) {
-			throw new Exception("Dorm\Model \"".get_class($this)."\" hasOne ".
-				"failed: parent must have one child");
-		}
-
-		return $data[0];
+		return new HasOne($this, $child_class, $foreign_key);
 	}
 
 	public function hasMany($child_class, $foreign_key) {
-		return $child_class::where([
-			$foreign_key => $this->id
-		]);
+		return new HasMany($this, $child_class, $foreign_key);
 	}
 }
 
