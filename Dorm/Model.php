@@ -79,7 +79,7 @@ abstract class Model {
 		return $objects;
 	}
 
-	#	finds record with given parameters
+	#	finds records matching given parameters
 	public static function where($args) {
 		$class = get_called_class();
 		$builder = new QueryBuilder();
