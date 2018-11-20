@@ -134,6 +134,10 @@ abstract class Model {
 				$this->$key = $value;
 			}
 		}
+		$this->preLoad();
+	}
+
+	protected function preLoad() {
 	}
 
 	#	create associative array from object attributes
@@ -144,12 +148,23 @@ abstract class Model {
 				unset($output[$key]);
 			}
 		}
-		return $output;
+		return $this->preSave($output);
+	}
+
+	protected function preSave($data) {
+		return $data;
 	}
 
 	public function load($data) {
 		$this->input($data);
 		$this->setId($data['id']);
+	}
+
+	# for lazy relational loading
+	public function __get($name) {
+		if (method_exists($this, $name)) {
+			return $this->$name = $this->{$name}();
+		}
 	}
 }
 
