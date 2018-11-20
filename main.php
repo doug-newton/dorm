@@ -16,6 +16,7 @@ Database::connect([
 class Car extends Model {
 	protected static $table = 'cars';
 	protected static $fillable = ['user_id','name'];
+	protected static $defaults = ['user_id' => 0];
 
 	public function user() {
 		$builder = new QueryBuilder();
@@ -36,10 +37,14 @@ class User extends Model {
 }
 
 try {
-	$user = User::find(1);
+	$user = User::where([
+		'name' => 'Alfonso'
+	])[0];
+
 	foreach ($user->cars as $car) {
-		echo $car->name.PHP_EOL;
+		echo "$car->name".PHP_EOL;
 	}
+
 } catch (Exception $e) {
 	echo "there was an exception";
 }
