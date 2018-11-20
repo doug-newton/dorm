@@ -14,7 +14,8 @@ class HasOne extends Relationship {
 		if (sizeof($data) != 1) {
 			throw new Exception("Dorm\Model \"".get_class($this->owner).
 				"\" hasOne ".
-				"failed: parent must have one child");
+				"failed: parent must have at least 1 child ".
+				"to be assumed as the only one");
 		}
 
 		return $data[0];

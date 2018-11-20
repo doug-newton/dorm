@@ -4,11 +4,11 @@ namespace Dorm;
 
 use Dorm\Database;
 use Dorm\QueryBuilder;
-use \PDO;
-use \Exception;
-
 use Dorm\Relationships\HasOne;
 use Dorm\Relationships\HasMany;
+
+use \PDO;
+use \Exception;
 
 class Model {
 	#	auto-generated id of the model (once 'created' or 'saved')
