@@ -188,7 +188,7 @@ abstract class Model {
 			$foreign_key => $this->id
 		]);
 
-		if (sizeof($data) == 1) {
+		if (sizeof($data) != 1) {
 			throw new Exception("Dorm\Model \"".get_class($this)."\" hasOne ".
 				"failed: parent must have one child");
 		}
