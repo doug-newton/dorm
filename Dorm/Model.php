@@ -5,6 +5,7 @@ namespace Dorm;
 use Dorm\Database;
 use Dorm\QueryBuilder;
 use \PDO;
+use \Exception;
 
 abstract class Model {
 	#	auto-generated id of the model (once 'created' or 'saved')
@@ -40,13 +41,19 @@ abstract class Model {
 	#	finds record with given parameters
 	public static function where($args) {
 		$class = get_called_class();
-		$object = new $class;
 		$builder = new QueryBuilder();
-		$sql = $builder->build_where($object::$table, $args);
-		$data = Database::preparedQuery($sql, $args)->fetch(PDO::FETCH_ASSOC);
-		$object->input($data);
-		$object->setId($data['id']);
-		return $object;
+		$sql = $builder->build_where($class::$table, $args);
+		$data = Database::preparedQuery($sql,$args)->fetchAll(PDO::FETCH_ASSOC);
+
+		$objects = [];
+		foreach ($data as $info) {
+			$object = new $class;
+			$object->input($info);
+			$object->setId($info['id']);
+			$objects[] = $object;
+		}
+
+		return $objects;
 	}
 
 	#	finds record and returns new instantiated object
@@ -129,11 +136,17 @@ abstract class Model {
 
 	#	assign values to object from array
 	protected function input($data) {
+		if ($data === false) {
+			throw new Exception("Dorm\Model \"".get_class($this).
+				"\" cannot read data for input");
+		}
+
 		foreach($data as $key => $value) {
 			if (in_array($key, $this::$fillable)) {
 				$this->$key = $value;
 			}
 		}
+
 		$this->preLoad();
 	}
 
@@ -151,10 +164,10 @@ abstract class Model {
 		return $this->preSave($output);
 	}
 
-	protected function preSave($data) {
-		return $data;
-	}
-
+	protected function preSave(&$data) {
+		return $data; 
+	} 
+	
 	public function load($data) {
 		$this->input($data);
 		$this->setId($data['id']);
@@ -165,6 +178,28 @@ abstract class Model {
 		if (method_exists($this, $name)) {
 			return $this->$name = $this->{$name}();
 		}
+	}
+
+	# relationships
+
+	public function hasOne($child_class, $foreign_key) {
+		# same as hasMany, but returns first result and there must only be one
+		$data = $child_class::where([
+			$foreign_key => $this->id
+		]);
+
+		if (sizeof($data) == 1) {
+			throw new Exception("Dorm\Model \"".get_class($this)."\" hasOne ".
+				"failed: parent must have one child");
+		}
+
+		return $data[0];
+	}
+
+	public function hasMany($child_class, $foreign_key) {
+		return $child_class::where([
+			$foreign_key => $this->id
+		]);
 	}
 }
 
