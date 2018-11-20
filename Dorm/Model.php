@@ -7,48 +7,10 @@ use Dorm\QueryBuilder;
 use \PDO;
 use \Exception;
 
-abstract class Relationship {
-	public abstract function get();
+use Dorm\Relationships\HasOne;
+use Dorm\Relationships\HasMany;
 
-	protected $child_class;
-	protected $foreign_key;
-
-	# the object that is using this relationship
-	protected $owner;
-
-	public function __construct($owner, $child_class, $foreign_key) {
-		$this->owner = $owner;
-		$this->child_class = $child_class;
-		$this->foreign_key = $foreign_key;
-	}
-}
-
-class HasOne extends Relationship {
-	public function get() {
-		# same as hasMany, but returns first result and there must only be one
-		$data = $child_class::where([
-			$this->foreign_key => $this->owner->getId()
-		]);
-
-		if (sizeof($data) != 1) {
-			throw new Exception("Dorm\Model \"".get_class($this->owner).
-				"\" hasOne ".
-				"failed: parent must have one child");
-		}
-
-		return $data[0];
-	}
-}
-
-class HasMany extends Relationship {
-	public function get() {
-		return $this->child_class::where([
-			$this->foreign_key => $this->owner->getId()
-		]);
-	}
-}
-
-abstract class Model {
+class Model {
 	#	auto-generated id of the model (once 'created' or 'saved')
 	protected $id = 0;
 
