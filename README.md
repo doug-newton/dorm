@@ -19,9 +19,9 @@ Now you are ready to use DORM's functionality.
 
 ### Using the Model class
 
-Assume you have a table called users with an id, a name and an email field.
+Assume you have a table called users with an `id`, a `name ` and an `email` field.
 
-Extend the Model class and set $table, $fillable, and $defaults as required. The constructor must take no parameters. The accessors and mutators in this example aren't necessary.
+Extend the Model class and set `$table`, `$fillable`, and `$defaults` as required. The constructor must take no parameters.
 
 ```php
 use Dorm\Model;
